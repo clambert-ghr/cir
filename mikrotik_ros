@@ -1,0 +1,14 @@
+# Mikrotik (Modo 1):
+# Obtiene el CIR (en kbps) aplicado mediante una cola simple sobre la interfaz de servicio.
+cir_raw=$(sshpass -p $password ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 $username@$device_ip "queue simple print value-list where target="$service_iface"" | /bin/grep -E 'max-limit')
+cir=$(echo $cir_raw | sed "s/[^0-9M/']//g" | sed 's/M/000000/g' | sed 's/G/000000000/g' | sed 's/\/.*//')
+
+# Mikrotik (Modo 2):
+# Obtiene el CIR (en kbps) aplicado mediante una regla de filtrado sobre la interfaz de servicio.
+cir_raw=$(sshpass -p $password ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 $username@$device_ip "ip firewall filter print value-list where comment="$service_iface"" | /bin/grep -E 'limit')
+cir=$(echo $cir_raw | sed "s/[^0-9M,']//g" | sed 's/M/000000/g' | sed 's/G/000000000/g' | sed 's/\,.*//')
+
+# Mikrotik (Modo 3):
+# Obtiene el CIR (en kbps) aplicado directamente sobre la interfaz física (no soporta subinterfaces).
+cir_raw=$(sshpass -p $password ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 $username@$device_ip "interface/ethernet/print value-list where name="$service_iface"" | /bin/grep -E 'bandwidth')
+cir=$(echo $cir_raw | sed "s/[^0-9M/']//g" | sed 's/M/000000/g' | sed 's/G/000000000/g' | sed 's/\/.*//')
