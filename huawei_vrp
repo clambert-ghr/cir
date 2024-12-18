@@ -1,0 +1,2 @@
+# Cisco IOS/IOS XE:
+cir=$(sshpass -p $password ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 $username@$device_ip "show policy-map $service_id Class class-default" | /bin/grep -E 'cir|rate')
