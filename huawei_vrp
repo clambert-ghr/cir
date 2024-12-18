@@ -1,2 +1,3 @@
-# Cisco IOS/IOS XE:
-cir=$(sshpass -p $password ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 $username@$device_ip "show policy-map $service_id Class class-default" | /bin/grep -E 'cir|rate')
+# Huawei:
+cir_raw=$(sshpass -p $password ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 $username@$device_ip "display qos-profile configuration $service_id" | /bin/grep -E 'cir' )
+cir=$(echo $cir_raw | sed 's/.*cir \(.*\) pir.*/\1/g' | sed 's/$/000/' )
